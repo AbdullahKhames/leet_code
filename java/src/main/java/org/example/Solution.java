@@ -63,4 +63,33 @@ public class Solution {
         });
         return result;
     }
+    class NumberPosition{
+        int index;
+        int number;
+        int repeated;
+        public NumberPosition(int index, int number, int repeated) {
+            this.index = index;
+            this.number = number;
+            this.repeated = repeated;
+        }
+        
+    }
+    public boolean containsNearbyDuplicate(int[] nums, int k) {
+        Map<Integer, NumberPosition> frequency = new HashMap<>();
+        NumberPosition val;
+        for (int i = 0; i < nums.length; i++) {
+            val = frequency.get(nums[i]);
+            if (val == null) {
+                val = new NumberPosition(i, nums[i], 1);
+                frequency.put(nums[i], val);
+            } else if (i != val.index && Math.abs(i - val.index) <= k) {
+                return true;
+            } else {
+                val.repeated++;
+                val.index = i;
+            }
+        }
+        return false;
+    }
+
 }
