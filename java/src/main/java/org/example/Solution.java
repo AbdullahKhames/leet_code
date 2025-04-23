@@ -1,91 +1,66 @@
 package org.example;
 
 import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Iterator;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
-import java.util.Set;
+import java.util.Map;
 
 public class Solution {
-    class CharacterTraversed {
-        public char val;
-        public int index;
-        public boolean traversed;
-        
-        @Override
-        public int hashCode() {
-            final int prime = 31;
-            int result = 1;
-            result = prime * result + getEnclosingInstance().hashCode();
-            result = prime * result + val;
-            result = prime * result + index;
-            result = prime * result + (traversed ? 1231 : 1237);
-            return result;
-        }
-        @Override
-        public boolean equals(Object obj) {
-            if (this == obj)
-                return true;
-            if (obj == null)
-                return false;
-            if (getClass() != obj.getClass())
-                return false;
-            CharacterTraversed other = (CharacterTraversed) obj;
-            if (!getEnclosingInstance().equals(other.getEnclosingInstance()))
-                return false;
-            if (val != other.val)
-                return false;
-            if (index != other.index)
-                return false;
-            if (traversed != other.traversed)
-                return false;
-            return true;
-        }
-        public CharacterTraversed(char val, int index) {
-            this.val = val;
-            this.index = index;
-        }
-        public CharacterTraversed() {
 
-        }
-
-        private Solution getEnclosingInstance() {
-            return Solution.this;
-        }
-        @Override
-        public String toString() {
-            return "CharacterTraversed [val=" + val + ", index=" + index + ", traversed=" + traversed + "]";
-        }
-        
-        
-    }
     public boolean isAnagram(String s, String t) {
         if (s.length() != t.length()) {
             return false;
         }
-        Set<CharacterTraversed> sList = new HashSet<>();
-        for (int i = 0; i < s.length(); i++) {
-            sList.add(new CharacterTraversed(s.charAt(i), i));
-        }
-        CharacterTraversed temp = new CharacterTraversed();
-        CharacterTraversed current;
-        for (int i = 0; i < t.length(); i++) {
-            temp.val = t.charAt(i);
-            Iterator<CharacterTraversed> it = sList.iterator();
-            while(it.hasNext()) {
-                current = it.next();
-                if (current.val == temp.val) {
-                    current.traversed = true;
-                }
+        Map<Character, Integer> frequency = new HashMap<>();
+        for (char c : s.toCharArray()) {
+            if (frequency.containsKey(c)) {
+                frequency.put(c, frequency.get(c) + 1);
+            } else {
+                frequency.put(c, 1);
             }
         }
-        Iterator<CharacterTraversed> it = sList.iterator();
-        while(it.hasNext()) {
-            current = it.next();
-            if (current.traversed == false) {
+        for (char c : t.toCharArray()) {
+            Integer freq = frequency.get(c);
+            if (freq != null && freq != 0) {
+                frequency.put(c, freq - 1);
+            } else {
                 return false;
             }
+            if (freq - 1 == 0) {
+                frequency.remove(c);
+            }
         }
-        return true;
+        return frequency.isEmpty();
+    }
+
+    private int hashString(String str) {
+        int result = 0;
+        for (char c : str.toCharArray()) {
+            result += (int) c;
+        }
+        return result % 100;
+    }
+    public List<List<String>> groupAnagrams(String[] strs) {
+        List<List<String>> result = new ArrayList<>();
+        Map<String, List<String>> sortedHashes = new HashMap<>();
+        List<String> temp;
+        for (String str : strs) {
+            char []arr = str.toCharArray();
+            Arrays.sort(arr);
+            String sortedVersion = new String(arr);
+            if (sortedHashes.containsKey(sortedVersion)) {
+                temp = sortedHashes.get(sortedVersion);
+            } else {
+                temp = new ArrayList<>();
+            }
+            temp.add(str);
+            sortedHashes.put(sortedVersion, temp);
+        }
+        
+        sortedHashes.forEach((key, val) -> {
+            result.add(val);
+        });
+        return result;
     }
 }
